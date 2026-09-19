@@ -200,52 +200,6 @@ FeatureCollection {
    Popup
    ============================================================ */
 
-function getPriorityColors(level: unknown) {
-  switch (String(level ?? "").toUpperCase()) {
-    case "CRITICAL":
-      return {
-        text: "#991b1b",
-        background: "#fee2e2",
-        border: "#fecaca",
-      };
-
-    case "HIGH":
-      return {
-        text: "#c2410c",
-        background: "#ffedd5",
-        border: "#fed7aa",
-      };
-
-    case "ELEVATED":
-      return {
-        text: "#a16207",
-        background: "#fef9c3",
-        border: "#fde68a",
-      };
-
-    case "MODERATE":
-      return {
-        text: "#0e7490",
-        background: "#cffafe",
-        border: "#a5f3fc",
-      };
-
-    case "LOW":
-      return {
-        text: "#475569",
-        background: "#e2e8f0",
-        border: "#cbd5e1",
-      };
-
-    default:
-      return {
-        text: "#334155",
-        background: "#f1f5f9",
-        border: "#e2e8f0",
-      };
-  }
-}
-
 function createPopupContent(
   properties: Record<
     string,
@@ -291,7 +245,7 @@ function createPopupContent(
     "uppercase";
 
   rank.style.color =
-    "#0891b2";
+    "#67e8f9";
 
   rank.style.marginBottom =
     "5px";
@@ -315,7 +269,7 @@ function createPopupContent(
     "700";
 
   title.style.color =
-    "#0f172a";
+    "#f8fafc";
 
   title.style.marginBottom =
     "8px";
@@ -332,20 +286,12 @@ function createPopupContent(
       0,
     ).toFixed(2);
 
-  const priorityLevel =
-    String(
+  priority.textContent =
+    `${
       properties
         .operational_priority_level ??
-      "N/A",
-    ).toUpperCase();
-
-  const priorityColors =
-    getPriorityColors(
-      priorityLevel,
-    );
-
-  priority.textContent =
-    `${priorityLevel} PRIORITY • ${priorityScore}`;
+      "N/A"
+    } PRIORITY • ${priorityScore}`;
 
   priority.style.display =
     "inline-block";
@@ -357,7 +303,7 @@ function createPopupContent(
     "700";
 
   priority.style.color =
-    priorityColors.text;
+    "#ffffff";
 
   priority.style.padding =
     "4px 7px";
@@ -369,10 +315,10 @@ function createPopupContent(
     "6px";
 
   priority.style.background =
-    priorityColors.background;
+    "rgba(255,255,255,0.08)";
 
   priority.style.border =
-    `1px solid ${priorityColors.border}`;
+    "1px solid rgba(255,255,255,0.12)";
 
   function addRow(
     label: string,
@@ -390,7 +336,7 @@ function createPopupContent(
       "1.6";
 
     row.style.color =
-      "#334155";
+      "#cbd5e1";
 
     const strong =
       document.createElement(
@@ -401,7 +347,7 @@ function createPopupContent(
       `${label}: `;
 
     strong.style.color =
-      "#64748b";
+      "#94a3b8";
 
     strong.style.fontWeight =
       "600";
@@ -415,7 +361,7 @@ function createPopupContent(
       value;
 
     valueSpan.style.color =
-      "#0f172a";
+      "#f1f5f9";
 
     row.append(
       strong,
@@ -708,73 +654,48 @@ export function CountyRiskMap() {
       );
 
       const map = new maplibregl.Map({
-        container,
+        container: container,
 
-        style: {
-          version: 8,
-          sources: {},
-          layers: [
-            {
-              id: "background",
-              type: "background",
-              paint: {
-                "background-color": "#07131d",
-              },
-            },
-          ],
+  style: {
+    version: 8,
+    sources: {},
+    layers: [
+      {
+        id: "background",
+        type: "background",
+        paint: {
+          "background-color": "#07131d",
         },
+      },
+    ],
+  },
 
-        center: [-98.5, 38.5],
-        zoom: 3.2,
-        minZoom: 2.2,
-        maxZoom: 10,
+  center: [-98.5, 38.5],
+  zoom: 3.2,
 
-        // Standard map interaction.
-        interactive: true,
-        scrollZoom: true,
-        dragPan: true,
-        doubleClickZoom: true,
-        keyboard: true,
-        touchZoomRotate: true,
-        cooperativeGestures: false,
+  // IMPORTANT — normal dashboard interaction
+  interactive: true,
 
-        // CrisisOps does not need 3D rotation/pitch.
-        dragRotate: false,
-        touchPitch: false,
-        renderWorldCopies: false,
+  scrollZoom: true,
+  dragPan: true,
+  doubleClickZoom: true,
+  keyboard: true,
+  touchZoomRotate: true,
 
-        attributionControl: false,
-      });
+  // Keep this FALSE.
+  // true makes normal scrolling/pinching intentionally harder.
+  cooperativeGestures: false,
+
+  // We don't need 3D rotation for CrisisOps.
+  dragRotate: false,
+  touchPitch: false,
+
+  attributionControl: false,
+});
+
 
       mapRef.current =
         map;
-
-      // Explicitly enable navigation handlers.
-      // This makes drag/pan work even if constructor defaults or
-      // surrounding app behavior previously interfered with it.
-      map.dragPan.enable();
-      map.scrollZoom.enable();
-      map.doubleClickZoom.enable();
-      map.keyboard.enable();
-      map.touchZoomRotate.enable();
-
-      map.dragRotate.disable();
-      map.touchZoomRotate.disableRotation();
-
-      const canvas =
-        map.getCanvas();
-
-      canvas.style.cursor =
-        "grab";
-
-      canvas.style.touchAction =
-        "none";
-
-      container.style.touchAction =
-        "none";
-
-      container.style.userSelect =
-        "none";
 
       /* --------------------------------------------------------
          Controls
@@ -809,6 +730,12 @@ export function CountyRiskMap() {
 
         "bottom-right",
       );
+
+      map.dragRotate
+        .disable();
+
+      map.touchZoomRotate
+        .disableRotation();
 
       /* --------------------------------------------------------
          Resize
@@ -849,39 +776,6 @@ export function CountyRiskMap() {
               "crisisops-map-popup",
           },
         );
-
-      let isDragging =
-        false;
-
-      const handleDragStart =
-        () => {
-          isDragging =
-            true;
-
-          canvas.style.cursor =
-            "grabbing";
-
-          popup.remove();
-        };
-
-      const handleDragEnd =
-        () => {
-          isDragging =
-            false;
-
-          canvas.style.cursor =
-            "grab";
-        };
-
-      map.on(
-        "dragstart",
-        handleDragStart,
-      );
-
-      map.on(
-        "dragend",
-        handleDragEnd,
-      );
 
       let hoveredCounty:
         string |
@@ -927,13 +821,6 @@ export function CountyRiskMap() {
             maplibregl
               .MapLayerMouseEvent,
         ) => {
-          if (
-            isDragging
-          ) {
-            popup.remove();
-            return;
-          }
-
           const featureItem =
             event
               .features?.[0];
@@ -967,7 +854,7 @@ export function CountyRiskMap() {
               .getCanvas()
               .style
               .cursor =
-              "grab";
+              "";
 
             clearHoveredCounty();
 
@@ -981,7 +868,7 @@ export function CountyRiskMap() {
             .getCanvas()
             .style
             .cursor =
-            "grab";
+            "pointer";
 
           if (
             hoveredCounty !==
@@ -1038,9 +925,7 @@ export function CountyRiskMap() {
             .getCanvas()
             .style
             .cursor =
-            isDragging
-              ? "grabbing"
-              : "grab";
+            "";
 
           clearHoveredCounty();
 
@@ -1122,6 +1007,9 @@ export function CountyRiskMap() {
 
                 data:
                   countyGeoJson,
+
+                promoteId:
+                    "county_flips"
               },
             );
           }
@@ -1444,7 +1332,9 @@ export function CountyRiskMap() {
 
             {
               padding:
-                28,
+                container.clientWidth < 768
+                  ? 12
+                  : 28,
 
               duration:
                 0,
@@ -1533,16 +1423,6 @@ export function CountyRiskMap() {
           handleMapError,
         );
 
-        map.off(
-          "dragstart",
-          handleDragStart,
-        );
-
-        map.off(
-          "dragend",
-          handleDragEnd,
-        );
-
         map.remove();
 
         mapRef.current =
@@ -1566,7 +1446,9 @@ export function CountyRiskMap() {
         crisisops-map
         relative
         h-full
-        min-h-[470px]
+        min-h-[360px]
+        sm:min-h-[400px]
+        md:min-h-[470px]
         w-full
         overflow-hidden
         bg-[#071018]
@@ -1580,7 +1462,9 @@ export function CountyRiskMap() {
           absolute
           inset-0
           h-full
-          min-h-[470px]
+          min-h-[360px]
+          sm:min-h-[400px]
+          md:min-h-[470px]
           w-full
         "
         aria-label="Interactive U.S. county disaster risk map"
@@ -1717,7 +1601,7 @@ export function CountyRiskMap() {
                 font-bold
                 uppercase
                 tracking-[0.13em]
-                text-cyan-300
+                text-slate-300
               "
             >
               Counties with active hazards

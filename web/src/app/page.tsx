@@ -2,7 +2,7 @@ import type { ComponentType, ReactNode } from "react";
 import Link from "next/link";
 import { CountyRiskMap } from "@/components/county-risk-map";
 import { DashboardRefreshButton } from "@/components/dashboard-refresh-button";
-
+import { MobileNavigation } from "@/components/mobile-navigation";
 import {
   Activity,
   AlertTriangle,
@@ -240,8 +240,8 @@ export default async function Home() {
 
 
         <section className="min-w-0 flex-1">
-
-          <header className="flex h-[74px] items-center justify-between border-b border-white/10 bg-[#08131d]/95 px-5 md:px-8">
+              <MobileNavigation />
+          <header className="hidden h-[74px] items-center justify-between border-b border-white/10 bg-[#08131d]/95 px-8 xl:flex">
 
             <div>
 
@@ -434,7 +434,7 @@ export default async function Home() {
           </header>
 
 
-          <div className="mx-auto max-w-[1680px] px-5 py-7 md:px-8">
+          <div className="mx-auto max-w-[1680px] px-4 py-6 sm:px-5 md:px-8 md:py-7">
 
             <div className="mb-7 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
 
@@ -554,11 +554,11 @@ export default async function Home() {
                 </div>
 
 
-                <div className="relative min-h-[470px] overflow-hidden bg-[#08131d]">
+                <div className="relative min-h-[360px] overflow-hidden bg-[#08131d] sm:min-h-[400px] md:min-h-[470px]">
 
                   <CountyRiskMap />
 
-                  <div className="absolute bottom-4 left-4 z-10 rounded-xl border border-white/10 bg-[#071018]/95 px-4 py-3">
+                  <div className="absolute bottom-4 left-4 z-10 hidden rounded-xl border border-white/10 bg-[#071018]/95 px-4 py-3 md:block">
 
                     <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
                       Most Common Hazard
@@ -574,7 +574,44 @@ export default async function Home() {
 
                   </div>
 
-                  <div className="absolute bottom-4 right-4 z-10 rounded-xl border border-white/10 bg-[#071018]/95 px-4 py-3">
+                  <div className="absolute bottom-4 right-4 z-10 hidden rounded-xl border border-white/10 bg-[#071018]/95 px-4 py-3 md:block">
+
+                    <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                      Most Affected State
+                    </div>
+
+                    <div className="mt-1.5 text-sm font-semibold text-white">
+                      {national.most_affected_state}
+                    </div>
+
+                    <div className="mt-1 text-[11px] text-slate-400">
+                      {national.most_affected_state_counties.toLocaleString()} affected counties
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div className="grid gap-3 border-t border-white/10 p-4 md:hidden">
+
+                  <div className="rounded-xl border border-white/10 bg-[#071018]/70 px-4 py-3">
+
+                    <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                      Most Common Hazard
+                    </div>
+
+                    <div className="mt-1.5 text-sm font-semibold text-white">
+                      {national.leading_hazard}
+                    </div>
+
+                    <div className="mt-1 text-[11px] text-slate-400">
+                      Affecting {national.leading_hazard_counties.toLocaleString()} counties
+                    </div>
+
+                  </div>
+
+
+                  <div className="rounded-xl border border-white/10 bg-[#071018]/70 px-4 py-3">
 
                     <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
                       Most Affected State
@@ -734,7 +771,7 @@ export default async function Home() {
             </div>
 
 
-            <section className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-[#0a1722]">
+            <section className="mt-5 hidden overflow-hidden rounded-2xl border border-white/10 bg-[#0a1722] md:block">
 
               <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
 
@@ -753,8 +790,7 @@ export default async function Home() {
               </div>
 
 
-              <div className="overflow-x-auto">
-
+                <div className="hidden overflow-x-auto md:block">
                 <table className="w-full min-w-[850px]">
 
                   <thead>
@@ -851,7 +887,7 @@ export default async function Home() {
             </section>
 
 
-            <section className="mt-5">
+            <section className="mt-5 hidden md:block">
 
               <div className="mb-3">
 

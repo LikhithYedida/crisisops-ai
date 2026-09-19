@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import Link from "next/link";
 import { DashboardRefreshButton } from "@/components/dashboard-refresh-button";
-
+import { MobileNavigation } from "@/components/mobile-navigation";
 import {
   Activity,
   AlertTriangle,
@@ -200,7 +200,8 @@ export default async function PriorityPage() {
         </aside>
 
         <section className="min-w-0 flex-1">
-          <header className="flex h-[74px] items-center justify-between border-b border-white/10 bg-[#08131d]/95 px-5 md:px-8">
+          <MobileNavigation />
+          <header className="hidden h-[74px] items-center justify-between border-b border-white/10 bg-[#08131d]/95 px-8 xl:flex">
 
   <div>
     <div className="text-sm font-semibold text-slate-100">

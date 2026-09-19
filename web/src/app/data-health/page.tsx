@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileNavigation } from "@/components/mobile-navigation";
 
 import type {
   ComponentType,
@@ -915,13 +916,13 @@ export default async function DataHealthPage() {
             ====================================================== */}
 
         <section className="min-w-0 flex-1">
-
+          <MobileNavigation />
 
           {/* ====================================================
               HEADER
               ==================================================== */}
 
-          <header className="flex h-[74px] items-center justify-between border-b border-white/10 bg-[#08131d]/95 px-5 md:px-8">
+          <header className="hidden h-[74px] items-center justify-between border-b border-white/10 bg-[#08131d]/95 px-8 xl:flex">
 
             <div>
 
