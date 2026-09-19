@@ -1,0 +1,1380 @@
+version: 2
+
+models:
+
+  # ============================================================
+  # County Operational Priority
+  # ============================================================
+
+  - name: mart_county_operational_priority
+    description: >
+      County-level operational crisis prioritization mart combining
+      current National Weather Service hazard conditions with population
+      exposure, CDC social vulnerability, and FEMA historical disaster
+      burden. One row represents one currently affected U.S. county
+      that has sufficient analytical context for scoring.
+
+    columns:
+
+      - name: county_fips
+        description: Five-digit U.S. county FIPS identifier.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: state
+        description: State or territory abbreviation.
+        data_tests:
+          - not_null
+
+      - name: county_name
+        description: County or county-equivalent name.
+        data_tests:
+          - not_null
+
+      - name: county_full_name
+        description: Full county name including state.
+        data_tests:
+          - not_null
+
+      - name: population
+        description: Census county population used for exposure modeling.
+        data_tests:
+          - not_null
+
+      - name: active_alerts
+        description: Number of distinct active NWS alerts affecting the county.
+        data_tests:
+          - not_null
+
+      - name: severe_or_extreme_alerts
+        description: Number of active NWS alerts classified Severe or Extreme.
+        data_tests:
+          - not_null
+
+      - name: dominant_event
+        description: Highest-priority active NWS hazard affecting the county.
+        data_tests:
+          - not_null
+
+      - name: hazard_score
+        description: Current live hazard score from 0 to 100.
+        data_tests:
+          - not_null
+
+      - name: hazard_level
+        description: Current operational hazard classification.
+        data_tests:
+          - not_null
+
+      - name: exposure_score
+        description: Population exposure score normalized from 0 to 100.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_score_model
+        description: CDC-based social vulnerability score normalized from 0 to 100.
+        data_tests:
+          - not_null
+
+      - name: history_score
+        description: FEMA historical disaster burden score normalized from 0 to 100.
+        data_tests:
+          - not_null
+
+      - name: context_score
+        description: Combined population, vulnerability, and historical context score.
+        data_tests:
+          - not_null
+
+      - name: operational_priority_score
+        description: >
+          Composite operational priority score using 55 percent current
+          hazard and 45 percent community context.
+        data_tests:
+          - not_null
+
+      - name: operational_priority_level
+        description: Operational prioritization classification.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - CRITICAL
+                  - HIGH
+                  - ELEVATED
+                  - MODERATE
+                  - LOW
+
+      - name: national_operational_rank
+        description: >
+          National rank ordered from highest to lowest operational priority.
+        data_tests:
+          - not_null
+
+      - name: dominant_risk_driver
+        description: >
+          Largest weighted contributor to the operational priority score.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Current Hazard
+                  - Population Exposure
+                  - Social Vulnerability
+                  - Historical Disaster Burden
+
+      - name: dominant_context_driver
+        description: >
+          Strongest non-hazard contextual factor amplifying a county's
+          operational priority. Values identify population exposure,
+          social vulnerability, or historical disaster burden.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Population Exposure
+                  - Social Vulnerability
+                  - Historical Disaster Burden
+
+      - name: hazard_share_pct
+        description: >
+          Percentage of the final operational priority score attributable
+          to the weighted current-hazard component.
+        data_tests:
+          - not_null
+
+      - name: exposure_share_pct
+        description: >
+          Percentage of the final operational priority score attributable
+          to population exposure.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_share_pct
+        description: >
+          Percentage of the final operational priority score attributable
+          to social vulnerability.
+        data_tests:
+          - not_null
+
+      - name: history_share_pct
+        description: >
+          Percentage of the final operational priority score attributable
+          to historical disaster burden.
+        data_tests:
+          - not_null
+
+      - name: hazard_contribution
+        description: >
+          Weighted hazard contribution representing 55 percent of the
+          operational priority model.
+        data_tests:
+          - not_null
+
+      - name: exposure_contribution
+        description: >
+          Weighted population exposure contribution representing
+          15 percent of the operational priority model.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_contribution
+        description: >
+          Weighted social vulnerability contribution representing
+          15 percent of the operational priority model.
+        data_tests:
+          - not_null
+
+      - name: history_contribution
+        description: >
+          Weighted FEMA historical disaster burden contribution
+          representing 15 percent of the operational priority model.
+        data_tests:
+          - not_null
+
+      - name: fema_declarations_total
+        description: >
+          Total distinct FEMA disaster declarations associated with
+          the county.
+
+      - name: fema_declarations_10y
+        description: >
+          FEMA disaster declarations associated with the county during
+          the trailing ten years.
+
+      - name: major_disasters_10y
+        description: >
+          FEMA Major Disaster declarations associated with the county
+          during the trailing ten years.
+
+      - name: emergencies_10y
+        description: >
+          FEMA Emergency declarations associated with the county during
+          the trailing ten years.
+
+      - name: fire_management_10y
+        description: >
+          FEMA Fire Management declarations associated with the county
+          during the trailing ten years.
+
+      - name: incident_types_10y
+        description: >
+          Distinct FEMA incident categories associated with the county
+          during the trailing ten years.
+
+
+  # ============================================================
+  # Unscored Active Geographies
+  # ============================================================
+
+  - name: mart_unscored_active_geographies
+    description: >
+      Audit mart containing active NWS-affected counties or
+      county-equivalents that cannot receive a complete
+      operational priority score because required county
+      context data is unavailable.
+
+    columns:
+
+      - name: county_fips
+        description: County or county-equivalent FIPS identifier.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: state
+        description: State or territory abbreviation.
+        data_tests:
+          - not_null
+
+      - name: county_name
+        description: County or county-equivalent name.
+        data_tests:
+          - not_null
+
+      - name: active_alerts
+        description: Number of active NWS alerts affecting the geography.
+        data_tests:
+          - not_null
+
+      - name: hazard_score
+        description: Current operational hazard score.
+        data_tests:
+          - not_null
+
+      - name: hazard_level
+        description: Current hazard classification.
+        data_tests:
+          - not_null
+
+      - name: dominant_event
+        description: Highest-priority active NWS event.
+        data_tests:
+          - not_null
+
+      - name: reason_code
+        description: >
+          Reason the geography could not receive a complete operational
+          priority score.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - NO_COUNTY_CONTEXT
+                  - MISSING_POPULATION
+                  - MISSING_EXPOSURE_SCORE
+                  - MISSING_VULNERABILITY_SCORE
+                  - MISSING_HISTORY_SCORE
+                  - MISSING_CONTEXT_SCORE
+
+      - name: scoring_blocked
+        description: >
+          Indicates that complete operational scoring was not possible.
+        data_tests:
+          - not_null
+
+      - name: exception_detected_at
+        description: Timestamp when the exception mart was generated.
+        data_tests:
+          - not_null
+
+      # ============================================================
+  # Priority Queue
+  # ============================================================
+
+  - name: mart_priority_queue
+    description: >
+      Frontend-ready operational county priority queue for CrisisOps.
+      One row represents one currently affected and scored U.S. county.
+      The mart preserves validated operational risk calculations while
+      adding UI-oriented attention states, filtering flags, explainability
+      fields, and human-readable priority context.
+
+    columns:
+
+      - name: county_fips
+        description: Five-digit U.S. county FIPS identifier.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: county_full_name
+        description: Full county name including state.
+        data_tests:
+          - not_null
+
+      - name: county_name
+        description: County or county-equivalent name.
+        data_tests:
+          - not_null
+
+      - name: state
+        description: State or territory abbreviation.
+        data_tests:
+          - not_null
+
+      - name: population
+        description: Population represented by the scored county.
+        data_tests:
+          - not_null
+
+      - name: national_operational_rank
+        description: >
+          National position of the county ordered from highest to lowest
+          operational priority.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: operational_priority_score
+        description: Validated county operational priority score.
+        data_tests:
+          - not_null
+
+      - name: operational_priority_level
+        description: Operational priority classification.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - CRITICAL
+                  - HIGH
+                  - ELEVATED
+                  - MODERATE
+                  - LOW
+
+      - name: priority_sort_order
+        description: >
+          Numeric UI sorting order corresponding to the operational
+          priority classification.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                quote: false  
+
+      - name: attention_status
+        description: >
+          Simplified action-oriented operating state used by the CrisisOps
+          priority queue interface.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - IMMEDIATE
+                  - PRIORITY
+                  - MONITOR
+                  - AWARENESS
+
+      - name: dominant_event
+        description: Current dominant NWS event affecting the county.
+        data_tests:
+          - not_null
+
+      - name: hazard_score
+        description: Current county hazard score.
+        data_tests:
+          - not_null
+
+      - name: hazard_level
+        description: Current operational hazard classification.
+        data_tests:
+          - not_null
+
+      - name: active_alerts
+        description: Number of active alert impacts associated with the county.
+        data_tests:
+          - not_null
+
+      - name: severe_or_extreme_alerts
+        description: >
+          Number of Severe or Extreme alert impacts associated with the county.
+        data_tests:
+          - not_null
+
+      - name: has_severe_or_extreme_alert
+        description: >
+          True when the county currently has at least one Severe or
+          Extreme alert impact.
+        data_tests:
+          - not_null
+
+      - name: is_high_priority
+        description: >
+          True when the county is currently classified CRITICAL or HIGH.
+        data_tests:
+          - not_null
+
+      - name: is_top_10
+        description: True when the county is currently ranked in the national top 10.
+        data_tests:
+          - not_null
+
+      - name: is_top_25
+        description: True when the county is currently ranked in the national top 25.
+        data_tests:
+          - not_null
+
+      - name: exposure_score
+        description: Population exposure component score.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_score_model
+        description: CDC-based social vulnerability component score.
+        data_tests:
+          - not_null
+
+      - name: history_score
+        description: FEMA historical disaster burden component score.
+        data_tests:
+          - not_null
+
+      - name: context_score
+        description: Combined county contextual risk score.
+        data_tests:
+          - not_null
+
+      - name: dominant_context_driver
+        description: >
+          Strongest non-hazard contextual amplifier affecting operational
+          priority.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Population Exposure
+                  - Social Vulnerability
+                  - Historical Disaster Burden
+
+      - name: dominant_risk_driver
+        description: Largest weighted contributor to the final priority score.
+        data_tests:
+          - not_null
+
+      - name: hazard_contribution
+        description: Weighted hazard contribution to the final score.
+        data_tests:
+          - not_null
+
+      - name: exposure_contribution
+        description: Weighted population exposure contribution.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_contribution
+        description: Weighted social vulnerability contribution.
+        data_tests:
+          - not_null
+
+      - name: history_contribution
+        description: Weighted historical disaster burden contribution.
+        data_tests:
+          - not_null
+
+      - name: hazard_share_pct
+        description: Percentage of final score attributable to current hazard.
+        data_tests:
+          - not_null
+
+      - name: exposure_share_pct
+        description: Percentage of final score attributable to population exposure.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_share_pct
+        description: Percentage of final score attributable to social vulnerability.
+        data_tests:
+          - not_null
+
+      - name: history_share_pct
+        description: Percentage of final score attributable to historical disaster burden.
+        data_tests:
+          - not_null
+
+      - name: priority_explanation
+        description: >
+          Human-readable summary identifying the current hazard and strongest
+          contextual amplifier for the county.
+        data_tests:
+          - not_null
+
+      - name: queue_generated_at
+        description: Timestamp when the operational queue was generated.
+        data_tests:
+          - not_null      
+
+    # ============================================================
+  # National Situation
+  # ============================================================
+
+  - name: mart_national_situation
+    description: >
+      Single-row national operating picture for CrisisOps combining
+      unique active NWS alert metrics with county-level operational
+      exposure, prioritization, leading hazard, top county, state-level
+      impact, and contextual risk-driver summaries.
+
+    columns:
+
+      - name: situation_generated_at
+        description: Timestamp when the national situation snapshot was generated.
+        data_tests:
+          - not_null
+
+      - name: unique_active_nws_alerts
+        description: >
+          Number of unique actual NWS alerts in the current live alert feed.
+        data_tests:
+          - not_null
+
+      - name: unique_severe_or_extreme_nws_alerts
+        description: >
+          Number of unique actual NWS alerts classified as Severe or Extreme.
+        data_tests:
+          - not_null
+
+      - name: active_scored_counties
+        description: >
+          Number of currently affected counties receiving a complete
+          operational priority score.
+        data_tests:
+          - not_null
+
+      - name: affected_states
+        description: >
+          Number of distinct states represented by currently scored counties.
+        data_tests:
+          - not_null
+
+      - name: county_alert_impacts
+        description: >
+          Total county-level alert occurrences. A single NWS alert affecting
+          multiple counties contributes multiple county-alert impacts.
+        data_tests:
+          - not_null
+
+      - name: severe_or_extreme_county_alert_impacts
+        description: >
+          Total county-level occurrences of Severe or Extreme alerts.
+        data_tests:
+          - not_null
+
+      - name: population_exposed
+        description: >
+          Total population across currently scored affected counties.
+        data_tests:
+          - not_null
+
+      - name: critical_counties
+        description: Number of counties currently classified CRITICAL.
+        data_tests:
+          - not_null
+
+      - name: high_priority_counties
+        description: Number of counties currently classified HIGH.
+        data_tests:
+          - not_null
+
+      - name: elevated_priority_counties
+        description: Number of counties currently classified ELEVATED.
+        data_tests:
+          - not_null
+
+      - name: moderate_priority_counties
+        description: Number of counties currently classified MODERATE.
+        data_tests:
+          - not_null
+
+      - name: low_priority_counties
+        description: Number of counties currently classified LOW.
+        data_tests:
+          - not_null
+
+      - name: critical_or_high_counties
+        description: >
+          Number of counties currently classified CRITICAL or HIGH.
+        data_tests:
+          - not_null
+
+      - name: avg_operational_priority_score
+        description: Average operational priority score across scored counties.
+        data_tests:
+          - not_null
+
+      - name: highest_operational_priority_score
+        description: Highest current county operational priority score.
+        data_tests:
+          - not_null
+
+      - name: avg_hazard_score
+        description: Average current hazard score across scored counties.
+        data_tests:
+          - not_null
+
+      - name: top_county_fips
+        description: FIPS identifier of the highest-ranked county.
+        data_tests:
+          - not_null
+
+      - name: top_county_name
+        description: Full name of the highest-ranked county.
+        data_tests:
+          - not_null
+
+      - name: top_county_state
+        description: State abbreviation of the highest-ranked county.
+        data_tests:
+          - not_null
+
+      - name: top_county_event
+        description: Dominant active hazard affecting the highest-ranked county.
+        data_tests:
+          - not_null
+
+      - name: top_county_priority_score
+        description: Operational priority score of the highest-ranked county.
+        data_tests:
+          - not_null
+
+      - name: top_county_priority_level
+        description: Operational priority level of the highest-ranked county.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - CRITICAL
+                  - HIGH
+                  - ELEVATED
+                  - MODERATE
+                  - LOW
+
+      - name: top_county_context_driver
+        description: >
+          Strongest non-hazard contextual risk amplifier for the
+          highest-ranked county.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Population Exposure
+                  - Social Vulnerability
+                  - Historical Disaster Burden
+
+      - name: top_county_national_rank
+        description: National operational rank of the highest-ranked county.
+        data_tests:
+          - not_null
+
+      - name: leading_hazard
+        description: >
+          Dominant hazard affecting the greatest number of scored counties.
+        data_tests:
+          - not_null
+
+      - name: leading_hazard_counties
+        description: Number of scored counties affected by the leading hazard.
+        data_tests:
+          - not_null
+
+      - name: leading_hazard_population
+        description: >
+          Population exposed across counties where the leading hazard
+          is the dominant event.
+        data_tests:
+          - not_null
+
+      - name: leading_hazard_county_alert_impacts
+        description: >
+          County-level alert impacts among counties dominated by the
+          leading hazard.
+        data_tests:
+          - not_null
+
+      - name: most_affected_state
+        description: >
+          State with the greatest number of currently scored affected counties.
+        data_tests:
+          - not_null
+
+      - name: most_affected_state_counties
+        description: >
+          Number of scored affected counties in the most affected state.
+        data_tests:
+          - not_null
+
+      - name: most_affected_state_population
+        description: >
+          Exposed population across scored counties in the most affected state.
+        data_tests:
+          - not_null
+
+      - name: most_affected_state_county_alert_impacts
+        description: >
+          County-level alert impacts in the most affected state.
+        data_tests:
+          - not_null
+
+      - name: most_affected_state_critical_or_high_counties
+        description: >
+          Number of CRITICAL or HIGH counties in the most affected state.
+        data_tests:
+          - not_null
+
+      - name: exposure_driven_counties
+        description: >
+          Counties where Population Exposure is the strongest context amplifier.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_driven_counties
+        description: >
+          Counties where Social Vulnerability is the strongest context amplifier.
+        data_tests:
+          - not_null
+
+      - name: history_driven_counties
+        description: >
+          Counties where Historical Disaster Burden is the strongest
+          context amplifier.
+        data_tests:
+          - not_null
+  # ============================================================
+  # Source Freshness
+  # ============================================================
+
+  - name: mart_source_freshness
+    description: >
+      Current operational freshness and availability status for
+      every raw source feeding CrisisOps.
+
+    columns:
+
+      - name: source_name
+        description: Human-readable source name.
+        data_tests:
+          - not_null
+
+      - name: source_category
+        description: LIVE, REFERENCE, or HISTORICAL source classification.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - LIVE
+                  - REFERENCE
+                  - HISTORICAL
+
+      - name: target_table
+        description: Raw BigQuery table being monitored.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: table_status
+        description: Current source-table availability state.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - AVAILABLE
+                  - MISSING
+
+      - name: loaded_at
+        description: >
+          Latest BigQuery modification timestamp for the raw table.
+        data_tests:
+          - not_null
+
+      - name: captured_at
+        description: Timestamp of the latest monitoring snapshot.
+        data_tests:
+          - not_null
+
+      - name: row_count
+        description: Current raw table row count.
+        data_tests:
+          - not_null
+
+      - name: freshness_status
+        description: Current freshness state.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - FRESH
+                  - WARNING
+                  - STALE
+                  - MISSING
+                  - UNKNOWN
+
+      - name: health_severity_rank
+        description: Numeric severity ordering used by monitoring views.
+        data_tests:
+          - not_null
+
+      - name: is_fresh
+        description: >
+          True when the source currently meets its freshness SLA.
+        data_tests:
+          - not_null
+
+      - name: requires_attention
+        description: >
+          True when the source is stale, missing, or unknown.
+        data_tests:
+          - not_null
+
+
+  # ============================================================
+  # Pipeline Health
+  # ============================================================
+
+  - name: mart_pipeline_health
+    description: >
+      Single-row operational health summary combining the latest
+      dbt execution, current source freshness, and CrisisOps
+      scoring coverage.
+
+    columns:
+
+      - name: latest_dbt_invocation_id
+        description: >
+          Invocation identifier for the latest captured dbt run.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: latest_dbt_run_at
+        description: Timestamp of the latest captured dbt execution.
+        data_tests:
+          - not_null
+
+      - name: latest_dbt_run_status
+        description: Overall result of the latest dbt execution.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - SUCCESS
+                  - WARNING
+                  - PARTIAL
+                  - FAILED
+
+      - name: latest_dbt_total_resources
+        description: Total resources executed in the latest dbt run.
+        data_tests:
+          - not_null
+
+      - name: latest_dbt_models_executed
+        description: Models executed by the latest dbt run.
+        data_tests:
+          - not_null
+
+      - name: latest_dbt_tests_executed
+        description: Tests executed by the latest dbt run.
+        data_tests:
+          - not_null
+
+      - name: latest_dbt_pass_rate_pct
+        description: Pass percentage from the latest dbt execution.
+        data_tests:
+          - not_null
+
+      - name: monitored_sources
+        description: Number of sources currently monitored for freshness.
+        data_tests:
+          - not_null
+
+      - name: fresh_sources
+        description: Number of currently fresh sources.
+        data_tests:
+          - not_null
+
+      - name: sources_requiring_attention
+        description: >
+          Number of sources currently requiring attention.
+        data_tests:
+          - not_null
+
+      - name: scored_geographies
+        description: >
+          Active geographies receiving an operational priority score.
+        data_tests:
+          - not_null
+
+      - name: unscored_geographies
+        description: >
+          Active geographies intentionally excluded from scoring.
+        data_tests:
+          - not_null
+
+      - name: total_active_geographies
+        description: >
+          Total county-level active hazard geographies accounted for.
+        data_tests:
+          - not_null
+
+      - name: scoring_coverage_pct
+        description: >
+          Percentage of active geographies successfully scored.
+        data_tests:
+          - not_null
+
+      - name: overall_system_status
+        description: Current CrisisOps platform health classification.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - HEALTHY
+                  - WARNING
+                  - DEGRADED
+                  - CRITICAL
+
+      - name: health_evaluated_at
+        description: Timestamp when the health mart was evaluated.
+        data_tests:
+          - not_null
+
+    # ============================================================
+  # County Intelligence
+  # ============================================================
+
+  - name: mart_county_intelligence
+    description: >
+      County-level CrisisOps drill-down serving mart providing current
+      hazard intelligence, national operational standing, community
+      context, explainability components, FEMA disaster history,
+      comparison metrics, and human-readable operational interpretation.
+      One row represents one currently affected and scored U.S. county.
+
+    columns:
+
+      - name: county_fips
+        description: Five-digit U.S. county FIPS identifier.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: county_full_name
+        description: Full county name including state.
+        data_tests:
+          - not_null
+
+      - name: state
+        description: State or territory abbreviation.
+        data_tests:
+          - not_null
+
+      - name: population
+        description: Population represented by the county.
+        data_tests:
+          - not_null
+
+      - name: national_operational_rank
+        description: Current national operational priority rank.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: national_active_scored_counties
+        description: Number of currently scored counties nationwide.
+        data_tests:
+          - not_null
+
+      - name: operational_priority_score
+        description: Current validated operational priority score.
+        data_tests:
+          - not_null
+
+      - name: operational_priority_level
+        description: Current operational priority classification.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - CRITICAL
+                  - HIGH
+                  - ELEVATED
+                  - MODERATE
+                  - LOW
+
+      - name: attention_status
+        description: Simplified operational attention state.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - IMMEDIATE
+                  - PRIORITY
+                  - MONITOR
+                  - AWARENESS
+
+      - name: national_avg_priority_score
+        description: Current national average operational priority score.
+        data_tests:
+          - not_null
+
+      - name: national_highest_priority_score
+        description: Current highest national operational priority score.
+        data_tests:
+          - not_null
+
+      - name: priority_score_vs_national_avg
+        description: >
+          County operational priority score minus the current national
+          average score.
+        data_tests:
+          - not_null
+
+      - name: national_rank_position_pct
+        description: >
+          County national rank position expressed as a percentage of all
+          currently scored counties.
+        data_tests:
+          - not_null
+
+      - name: dominant_event
+        description: Current dominant NWS hazard affecting the county.
+        data_tests:
+          - not_null
+
+      - name: hazard_score
+        description: Current hazard score.
+        data_tests:
+          - not_null
+
+      - name: hazard_level
+        description: Current hazard classification.
+        data_tests:
+          - not_null
+
+      - name: active_alerts
+        description: Current county-level alert impacts.
+        data_tests:
+          - not_null
+
+      - name: severe_or_extreme_alerts
+        description: Current Severe or Extreme county-level alert impacts.
+        data_tests:
+          - not_null
+
+      - name: has_severe_or_extreme_alert
+        description: >
+          True when at least one Severe or Extreme alert currently affects
+          the county.
+        data_tests:
+          - not_null
+
+      - name: dominant_context_driver
+        description: Strongest non-hazard contextual risk amplifier.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Population Exposure
+                  - Social Vulnerability
+                  - Historical Disaster Burden
+
+      - name: hazard_share_pct
+        description: Percentage of the operational score attributable to hazard.
+        data_tests:
+          - not_null
+
+      - name: exposure_share_pct
+        description: Percentage attributable to population exposure.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_share_pct
+        description: Percentage attributable to social vulnerability.
+        data_tests:
+          - not_null
+
+      - name: history_share_pct
+        description: Percentage attributable to historical disaster burden.
+        data_tests:
+          - not_null
+
+      - name: priority_explanation
+        description: Concise explanation of the county priority.
+        data_tests:
+          - not_null
+
+      - name: hazard_explanation
+        description: Human-readable interpretation of current hazard conditions.
+        data_tests:
+          - not_null
+
+      - name: context_explanation
+        description: Human-readable interpretation of contextual risk amplification.
+        data_tests:
+          - not_null
+
+      - name: rank_explanation
+        description: Human-readable explanation of current national ranking.
+        data_tests:
+          - not_null
+
+      - name: history_explanation
+        description: Human-readable summary of FEMA historical disaster context.
+        data_tests:
+          - not_null
+
+      - name: response_posture
+        description: >
+          Advisory UI interpretation of the level of operational attention
+          associated with the county.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Immediate operational review recommended
+                  - Prioritize for operational review
+                  - Maintain active monitoring
+                  - Maintain situational awareness
+
+      - name: intelligence_generated_at
+        description: Timestamp when the county intelligence snapshot was generated.
+        data_tests:
+          - not_null
+
+    # ============================================================
+  # County Alert Detail
+  # ============================================================
+
+  - name: mart_county_alert_detail
+    description: >
+      Alert-level child serving mart for CrisisOps County Intelligence.
+      One row represents one actual NWS alert mapped to one currently
+      scored U.S. county. Geographic resolution is inherited from the
+      validated intermediate alert-to-county mapping rather than being
+      recalculated in the serving layer.
+
+    columns:
+
+      - name: alert_county_key
+        description: Unique identifier for an alert and county combination.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: alert_id
+        description: Unique National Weather Service alert identifier.
+        data_tests:
+          - not_null
+
+      - name: county_fips
+        description: Five-digit U.S. county FIPS identifier.
+        data_tests:
+          - not_null
+
+      - name: county_full_name
+        description: Full county name including state.
+        data_tests:
+          - not_null
+
+      - name: county_name
+        description: County or county-equivalent name.
+        data_tests:
+          - not_null
+
+      - name: state
+        description: State or territory abbreviation.
+        data_tests:
+          - not_null
+
+      - name: population
+        description: Population of the currently scored county.
+        data_tests:
+          - not_null
+
+      - name: national_operational_rank
+        description: Current CrisisOps national operational rank for the county.
+        data_tests:
+          - not_null
+
+      - name: operational_priority_score
+        description: Current CrisisOps operational priority score.
+        data_tests:
+          - not_null
+
+      - name: operational_priority_level
+        description: Current CrisisOps operational priority classification.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - CRITICAL
+                  - HIGH
+                  - ELEVATED
+                  - MODERATE
+                  - LOW
+
+      - name: attention_status
+        description: Simplified operational attention state for the county.
+        data_tests:
+          - not_null
+
+      - name: dominant_context_driver
+        description: Strongest non-hazard contextual amplifier for the county.
+        data_tests:
+          - not_null
+
+      - name: response_posture
+        description: Advisory operational-review posture for the county.
+        data_tests:
+          - not_null
+
+      - name: event
+        description: NWS event type associated with the alert.
+        data_tests:
+          - not_null
+
+      - name: severity
+        description: >
+          Official NWS severity attribute for the individual alert.
+          This is distinct from the CrisisOps modeled county hazard level.
+        data_tests:
+          - not_null
+
+      - name: certainty
+        description: NWS certainty classification.
+        data_tests:
+          - not_null
+
+      - name: urgency
+        description: NWS urgency classification.
+        data_tests:
+          - not_null
+
+      - name: status
+        description: NWS alert status.
+        data_tests:
+          - not_null
+
+      - name: headline
+        description: Public-facing NWS alert headline.
+
+      - name: description
+        description: Full NWS alert description.
+
+      - name: instruction
+        description: NWS protective-action or response instruction when provided.
+
+      - name: area_description
+        description: NWS textual description of the affected area.
+
+      - name: sender
+        description: NWS alert sender identifier.
+
+      - name: sender_name
+        description: Human-readable NWS issuing office or sender name.
+
+      - name: sent_at
+        description: Timestamp when the NWS alert was issued.
+
+      - name: effective_at
+        description: Timestamp when the alert becomes effective.
+
+      - name: onset_at
+        description: Expected hazard onset timestamp when provided.
+
+      - name: expires_at
+        description: Alert expiration timestamp.
+
+      - name: ends_at
+        description: Expected hazard end timestamp when provided.
+
+      - name: matched_zone_count
+        description: >
+          Number of alert zones contributing to this resolved alert-county
+          relationship.
+        data_tests:
+          - not_null
+
+      - name: matched_zone_ids
+        description: Zone identifiers contributing to the county mapping.
+
+      - name: representative_latitude
+        description: Representative county latitude used by the geographic model.
+
+      - name: representative_longitude
+        description: Representative county longitude used by the geographic model.
+
+      - name: is_severe_or_extreme
+        description: >
+          True when the official NWS alert severity is Severe or Extreme.
+        data_tests:
+          - not_null
+
+      - name: alert_severity_sort_order
+        description: Numeric UI ordering for NWS alert severity.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                quote: false
+
+      - name: alert_summary
+        description: Human-readable summary of the mapped NWS alert.
+        data_tests:
+          - not_null
+
+      - name: alert_detail_generated_at
+        description: Timestamp when the serving mart was generated.
+        data_tests:
+          - not_null                

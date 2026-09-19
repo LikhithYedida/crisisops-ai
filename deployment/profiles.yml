@@ -1,0 +1,19 @@
+crisisops:
+  target: prod
+
+  outputs:
+    prod:
+      type: bigquery
+      method: oauth
+
+      project: "{{ env_var('GOOGLE_CLOUD_PROJECT', 'crisisops-intelligence') }}"
+      dataset: "{{ env_var('DBT_DATASET', 'crisisops_staging') }}"
+
+      location: US
+
+      threads: 4
+
+      priority: interactive
+
+      job_execution_timeout_seconds: 300
+      job_retries: 1

@@ -1,0 +1,12 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "Dockerfile.pipeline"
+      - "-t"
+      - "us-central1-docker.pkg.dev/$PROJECT_ID/crisisops-pipeline/crisisops-pipeline:latest"
+      - "."
+
+images:
+  - "us-central1-docker.pkg.dev/$PROJECT_ID/crisisops-pipeline/crisisops-pipeline:latest"

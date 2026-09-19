@@ -1,0 +1,74 @@
+version: 2
+
+models:
+
+  - name: stg_ingestion_metadata
+    description: >
+      Standardized ingestion metadata snapshots used to monitor
+      source availability and freshness across CrisisOps.
+
+    columns:
+
+      - name: capture_id
+        description: Identifier shared by every source recorded in one capture run.
+        data_tests:
+          - not_null
+
+      - name: captured_at
+        description: Timestamp when the metadata snapshot was captured.
+        data_tests:
+          - not_null
+
+      - name: source_name
+        description: Human-readable source name.
+        data_tests:
+          - not_null
+
+      - name: source_category
+        description: Operational source category.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - LIVE
+                  - REFERENCE
+                  - HISTORICAL
+
+      - name: target_table
+        description: BigQuery raw table being monitored.
+        data_tests:
+          - not_null
+
+      - name: table_status
+        description: Availability of the source table.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - AVAILABLE
+                  - MISSING
+
+      - name: warn_after_minutes
+        description: Age threshold after which the source enters warning state.
+        data_tests:
+          - not_null
+
+      - name: error_after_minutes
+        description: Age threshold after which the source is considered stale.
+        data_tests:
+          - not_null
+
+      - name: freshness_status_at_capture
+        description: Freshness classification at capture time.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - FRESH
+                  - WARNING
+                  - STALE
+                  - MISSING
+                  - UNKNOWN

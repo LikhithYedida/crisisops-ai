@@ -1,0 +1,45 @@
+# CrisisOps Cloud Build upload exclusions
+
+# Secrets / local configuration
+.env
+.env.*
+web/.env.local
+web/.env.*
+
+# Python local environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Git / editor
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Next.js application is deployed separately
+web/
+
+# Local generated/runtime data
+data/
+logs/
+*.log
+
+# Local dbt artifacts
+dbt/**/target/
+dbt/**/logs/
+dbt/**/dbt_packages/
+
+# Local-only deployment file
+deployment/.user.yml
+
+# OS/temp files
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.bak
+*.swp

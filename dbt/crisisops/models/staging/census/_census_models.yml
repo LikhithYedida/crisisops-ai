@@ -1,0 +1,23 @@
+version: 2
+
+models:
+
+  - name: stg_county_population
+    description: >
+      Cleaned Census ACS county population reference
+      used for CrisisOps exposure calculations.
+
+    columns:
+
+      - name: county_fips
+        data_tests:
+          - not_null
+          - unique
+
+      - name: county_full_name
+        data_tests:
+          - not_null
+
+      - name: population
+        data_tests:
+          - not_null

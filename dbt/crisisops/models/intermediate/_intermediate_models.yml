@@ -1,0 +1,223 @@
+version: 2
+
+models:
+
+  - name: int_zone_county_map
+    description: >
+      Business-grain mapping between NWS forecast zones
+      and U.S. counties. One row represents one unique
+      state-zone and county-FIPS relationship.
+
+    columns:
+
+      - name: zone_county_key
+        description: >
+          Unique business key for an NWS zone to county
+          relationship.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: state_zone
+        data_tests:
+          - not_null
+
+      - name: county_fips
+        data_tests:
+          - not_null
+
+      - name: state
+        data_tests:
+          - not_null
+
+      - name: county_name
+        data_tests:
+          - not_null
+
+      - name: representative_latitude
+        data_tests:
+          - not_null
+
+      - name: representative_longitude
+        data_tests:
+          - not_null
+  - name: int_alert_counties
+    description: >
+      County-level resolution of active NWS alerts.
+      One row represents one unique alert and affected
+      county relationship derived from forecast-zone
+      mappings.
+
+    columns:
+
+      - name: alert_county_key
+        description: >
+          Unique identifier combining alert ID and
+          county FIPS.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: alert_id
+        data_tests:
+          - not_null
+
+      - name: county_fips
+        data_tests:
+          - not_null
+
+      - name: state
+        data_tests:
+          - not_null
+
+      - name: county_name
+        data_tests:
+          - not_null
+
+      - name: event
+        data_tests:
+          - not_null
+
+      - name: severity
+        data_tests:
+          - not_null
+
+      - name: matched_zone_count
+        data_tests:
+          - not_null
+  - name: int_county_live_hazard
+    description: >
+      County-level aggregation of active National Weather Service
+      alerts used to quantify current operational hazard severity.
+      One row represents one affected county.
+
+    columns:
+
+      - name: county_fips
+        description: Five-digit county FIPS identifier.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: state
+        description: State abbreviation.
+        data_tests:
+          - not_null
+
+      - name: county_name
+        description: County or county-equivalent name.
+        data_tests:
+          - not_null
+
+      - name: active_alerts
+        description: Number of distinct active alerts affecting the county.
+        data_tests:
+          - not_null
+
+      - name: severe_or_extreme_alerts
+        description: Count of Severe or Extreme NWS alerts.
+        data_tests:
+          - not_null
+
+      - name: hazard_score
+        description: Current county-level operational hazard score from 0 to 100.
+        data_tests:
+          - not_null
+
+      - name: hazard_level
+        description: Operational classification of current hazard conditions.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - LOW
+                  - MINOR
+                  - MODERATE
+                  - SEVERE
+                  - EXTREME
+
+      - name: dominant_event
+        description: Highest-scoring active NWS event affecting the county.
+        data_tests:
+          - not_null
+  - name: int_fema_county_history
+    description: >
+      County-level FEMA historical disaster burden and
+      normalized historical risk score.
+
+    columns:
+
+      - name: county_fips
+        data_tests:
+          - not_null
+          - unique
+
+      - name: fema_declarations_total
+        data_tests:
+          - not_null
+
+      - name: history_score
+        data_tests:
+          - not_null
+
+
+  - name: int_county_context
+    description: >
+      County-level community context model combining Census
+      population exposure, CDC social vulnerability, and FEMA
+      historical disaster burden. One row represents one county.
+
+    columns:
+
+      - name: county_fips
+        description: Five-digit county FIPS identifier.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: population
+        description: Census county population.
+        data_tests:
+          - not_null
+
+      - name: exposure_score
+        description: >
+          National population exposure percentile normalized
+          to a 0-100 scale.
+        data_tests:
+          - not_null
+
+      - name: vulnerability_score_model
+        description: >
+          CDC Social Vulnerability Index converted from
+          a 0-1 percentile to a 0-100 model score.
+        data_tests:
+          - not_null
+
+      - name: fema_declarations_total
+        description: >
+          Total number of distinct FEMA disasters associated
+          with the county.
+        data_tests:
+          - not_null
+
+      - name: fema_declarations_10y
+        description: >
+          Distinct FEMA disasters during the trailing ten years.
+        data_tests:
+          - not_null
+
+      - name: history_score
+        description: >
+          National FEMA historical disaster burden percentile
+          normalized to a 0-100 scale.
+        data_tests:
+          - not_null
+
+      - name: context_score
+        description: >
+          Composite county context score combining population
+          exposure, social vulnerability, and FEMA history.
+        data_tests:
+          - not_null

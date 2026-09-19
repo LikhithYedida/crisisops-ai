@@ -1,0 +1,34 @@
+version: 2
+
+models:
+
+  - name: stg_fema_declarations
+    description: >
+      Standardized FEMA disaster declaration history
+      used to measure long-term county disaster burden.
+
+    columns:
+
+      - name: disaster_number
+        data_tests:
+          - not_null
+
+      - name: state
+        data_tests:
+          - not_null
+
+      - name: declaration_type
+        data_tests:
+          - not_null
+
+      - name: declaration_at
+        data_tests:
+          - not_null
+
+      - name: incident_type
+        data_tests:
+          - not_null
+
+      - name: county_fips
+        data_tests:
+          - not_null

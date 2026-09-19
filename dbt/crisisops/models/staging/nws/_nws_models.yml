@@ -1,0 +1,184 @@
+version: 2
+
+models:
+
+  - name: stg_nws_alerts
+    description: >
+      Cleaned and typed National Weather Service active
+      alert data used by downstream CrisisOps risk models.
+
+    columns:
+
+      - name: alert_id
+        description: >
+          Unique identifier assigned to the NWS alert.
+        data_tests:
+          - not_null
+          - unique
+
+
+      - name: event
+        description: >
+          NWS event type such as Flood Watch,
+          Heat Advisory, or Wind Advisory.
+        data_tests:
+          - not_null
+
+
+      - name: severity
+        description: >
+          CAP severity classification for the alert.
+        data_tests:
+          - not_null
+
+          - accepted_values:
+              arguments:
+                values:
+                  - Extreme
+                  - Severe
+                  - Moderate
+                  - Minor
+                  - Unknown
+
+
+      - name: certainty
+        description: >
+          CAP certainty classification.
+        data_tests:
+          - not_null
+
+          - accepted_values:
+              arguments:
+                values:
+                  - Observed
+                  - Likely
+                  - Possible
+                  - Unlikely
+                  - Unknown
+
+
+      - name: urgency
+        description: >
+          CAP urgency classification.
+        data_tests:
+          - not_null
+
+          - accepted_values:
+              arguments:
+                values:
+                  - Immediate
+                  - Expected
+                  - Future
+                  - Past
+                  - Unknown
+
+
+      - name: status
+        description: >
+          CAP alert status.
+        data_tests:
+          - not_null
+
+          - accepted_values:
+              arguments:
+                values:
+                  - Actual
+                  - Exercise
+                  - System
+                  - Test
+                  - Draft
+
+
+      - name: effective_at
+        description: >
+          Timestamp when the alert became effective.
+        data_tests:
+          - not_null
+
+
+      - name: expires_at
+        description: >
+          Timestamp when the alert expires.
+        data_tests:
+          - not_null
+
+
+      - name: affected_zone_count
+        description: >
+          Number of NWS geographic zones referenced
+          by the alert.
+        data_tests:
+          - not_null
+
+
+      - name: is_actual_alert
+        description: >
+          True when the alert represents an actual
+          operational alert rather than a test.
+        data_tests:
+          - not_null
+
+
+      - name: has_geometry
+        description: >
+          Indicates whether explicit GeoJSON geometry
+          was included in the NWS alert.
+        data_tests:
+          - not_null
+
+  - name: stg_alert_zones
+    description: >
+      Normalized relationship between NWS alerts and
+      the geographic zones referenced by those alerts.
+
+    columns:
+
+      - name: alert_id
+        data_tests:
+          - not_null
+
+      - name: zone_id
+        data_tests:
+          - not_null
+
+      - name: zone_type
+        data_tests:
+          - not_null
+
+      - name: alert_zone_key
+        data_tests:
+          - not_null
+          - unique
+
+
+  - name: stg_zone_county_crosswalk
+    description: >
+      Standardized mapping between NWS forecast zones
+      and U.S. counties.
+
+    columns:
+
+      - name: state
+        data_tests:
+          - not_null
+
+      - name: state_zone
+        data_tests:
+          - not_null
+
+      - name: county_name
+        data_tests:
+          - not_null
+
+      - name: county_fips
+        data_tests:
+          - not_null
+
+      - name: zone_county_key
+        description: >
+          Business relationship identifier combining the
+          NWS forecast zone and county FIPS. This identifier
+          may repeat in staging when the source contains
+          multiple metadata records for the same relationship.
+        data_tests:
+          - not_null

@@ -1,0 +1,31 @@
+version: 2
+
+models:
+
+  - name: stg_county_svi
+    description: >
+      Standardized county-level CDC Social Vulnerability
+      Index data used to model community vulnerability.
+
+    columns:
+
+      - name: county_fips
+        data_tests:
+          - not_null
+          - unique
+
+      - name: state_name
+        data_tests:
+          - not_null
+
+      - name: state_abbr
+        data_tests:
+          - not_null
+
+      - name: county_name
+        data_tests:
+          - not_null
+
+      - name: svi_overall
+        data_tests:
+          - not_null

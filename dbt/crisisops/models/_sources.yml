@@ -1,0 +1,54 @@
+version: 2
+
+sources:
+
+  - name: crisisops_raw
+    description: >
+      Raw CrisisOps source tables loaded into BigQuery before
+      transformation through dbt staging, intermediate, and mart layers.
+
+    database: crisisops-intelligence
+    schema: crisisops_raw
+
+    tables:
+
+      - name: active_alerts
+        description: >
+          Raw active National Weather Service alert records ingested
+          from the NWS API.
+
+      - name: alert_zones
+        description: >
+          Raw National Weather Service alert-to-zone relationships
+          extracted from active alert data.
+
+      - name: forecast_zone_county_crosswalk
+        description: >
+          Raw NWS forecast-zone to county crosswalk used to resolve
+          weather alert geographies to county FIPS codes.
+
+      - name: county_population
+        description: >
+          Raw county population reference data from the U.S. Census.
+
+      - name: county_svi
+        description: >
+          Raw county-level CDC Social Vulnerability Index data used
+          for vulnerability modeling.
+
+      - name: fema_declarations
+        description: >
+          Raw FEMA disaster declaration history used to calculate
+          historical disaster burden by county.
+
+      - name: ingestion_metadata
+        description: >
+          Operational metadata snapshots tracking CrisisOps raw source
+          availability, load timestamps, row counts, storage size,
+          freshness thresholds, and freshness status.
+
+      - name: dbt_run_metadata
+        description: >
+          Historical metadata captured from dbt run_results.json,
+          including execution status, resource counts, test outcomes,
+          pass rate, and execution duration.

@@ -1,0 +1,88 @@
+version: 2
+
+models:
+
+  - name: stg_dbt_run_metadata
+    description: >
+      Standardized historical metadata for dbt executions used
+      by CrisisOps pipeline monitoring and System Health reporting.
+
+    columns:
+
+      - name: invocation_id
+        description: Unique dbt invocation identifier.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: captured_at
+        description: Timestamp when the dbt artifact was captured.
+        data_tests:
+          - not_null
+
+      - name: artifact_generated_at
+        description: Timestamp when dbt generated the run-results artifact.
+        data_tests:
+          - not_null
+
+      - name: dbt_version
+        description: dbt Core version that executed the command.
+        data_tests:
+          - not_null
+
+      - name: command
+        description: dbt command represented by the artifact.
+        data_tests:
+          - not_null
+
+      - name: total_nodes
+        description: Total resources executed by the dbt command.
+        data_tests:
+          - not_null
+
+      - name: models_executed
+        description: Number of dbt models executed.
+        data_tests:
+          - not_null
+
+      - name: tests_executed
+        description: Number of dbt tests executed.
+        data_tests:
+          - not_null
+
+      - name: passed_nodes
+        description: Number of resources that passed successfully.
+        data_tests:
+          - not_null
+
+      - name: warning_nodes
+        description: Number of resources completing with warnings.
+        data_tests:
+          - not_null
+
+      - name: error_nodes
+        description: Number of resources that failed.
+        data_tests:
+          - not_null
+
+      - name: skipped_nodes
+        description: Number of skipped resources.
+        data_tests:
+          - not_null
+
+      - name: pass_rate_pct
+        description: Percentage of executed resources that passed.
+        data_tests:
+          - not_null
+
+      - name: run_status
+        description: Overall status derived from dbt execution results.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - SUCCESS
+                  - WARNING
+                  - PARTIAL
+                  - FAILED

@@ -1,0 +1,37 @@
+# Python virtual environment
+.venv/
+
+# Python temporary files
+__pycache__/
+*.pyc
+
+# Environment variables and secrets
+.env
+
+# Local raw data
+data/raw/
+data/processed/
+
+# IDE files
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+# Python local environment and cache
+.venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+# Runtime logs
+logs/
+**/*.log
+
+# Local deployment configuration
+deployment/.user.yml
+
+# Local environment variants
+.env.*
+!.env.example
+!**/.env.example

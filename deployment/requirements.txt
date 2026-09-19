@@ -1,0 +1,12 @@
+# CrisisOps production pipeline dependencies
+# Versions pinned from the locally validated environment.
+
+dbt-core==1.12.5
+dbt-bigquery==1.12.1
+
+google-cloud-bigquery==3.45.1
+google-api-core==2.37.0
+
+pandas==3.0.5
+requests==2.34.2
+python-dotenv==1.2.3

@@ -1,0 +1,99 @@
+# ============================================================
+# CrisisOps production pipeline
+#
+# Intended runtime:
+#   Cloud Scheduler
+#        ↓
+#   Cloud Run Job
+#        ↓
+#   deployment/run_pipeline.py
+# ============================================================
+
+
+FROM python:3.13-slim
+
+
+# ------------------------------------------------------------
+# Python / runtime settings
+# ------------------------------------------------------------
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
+
+ENV GOOGLE_CLOUD_PROJECT=crisisops-intelligence
+ENV DBT_DATASET=crisisops_staging
+
+
+# ------------------------------------------------------------
+# System packages
+#
+# git is useful for dbt dependency resolution if the project
+# later uses Git-based dbt packages.
+# ------------------------------------------------------------
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# ------------------------------------------------------------
+# Application directory
+# ------------------------------------------------------------
+
+WORKDIR /app
+
+
+# ------------------------------------------------------------
+# Install Python + dbt dependencies first
+#
+# Keeping this before copying the full project lets Docker
+# reuse the dependency layer when application code changes.
+# ------------------------------------------------------------
+
+COPY deployment/requirements.txt \
+     /app/deployment/requirements.txt
+
+RUN python -m pip install \
+    --upgrade pip \
+    && python -m pip install \
+    -r /app/deployment/requirements.txt
+
+
+# ------------------------------------------------------------
+# Copy only the parts required by the pipeline
+#
+# The Next.js web application is intentionally NOT included.
+# ------------------------------------------------------------
+
+COPY deployment/ \
+     /app/deployment/
+
+COPY ingestion/ \
+     /app/ingestion/
+
+COPY processing/ \
+     /app/processing/
+
+COPY dbt/ \
+     /app/dbt/
+
+
+# ------------------------------------------------------------
+# Sanity checks during image build
+# ------------------------------------------------------------
+
+RUN python --version \
+    && dbt --version
+
+
+# ------------------------------------------------------------
+# Cloud Run Job entry point
+#
+# A Cloud Run Job runs the command and exits when complete.
+# It does not need to expose an HTTP port.
+# ------------------------------------------------------------
+
+CMD ["python", "/app/deployment/run_pipeline.py"]
