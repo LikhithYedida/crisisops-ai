@@ -268,3 +268,89 @@ p {
 
   color: #cbd5e1;
 }
+/* ============================================================
+   CrisisOps MapLibre county popup
+   ============================================================ */
+
+.crisisops-map-popup .maplibregl-popup-content {
+  background: #0a1722 !important;
+  color: #f8fafc !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+
+  padding: 14px 16px;
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(34, 211, 238, 0.03);
+
+  overflow: hidden;
+}
+
+
+/* Remove MapLibre default light popup styling */
+
+.crisisops-map-popup .maplibregl-popup-close-button {
+  color: #cbd5e1;
+}
+
+
+/* Popup arrow / tip */
+
+.crisisops-map-popup.maplibregl-popup-anchor-top
+  .maplibregl-popup-tip {
+  border-bottom-color: #0a1722 !important;
+}
+
+.crisisops-map-popup.maplibregl-popup-anchor-top-left
+  .maplibregl-popup-tip {
+  border-bottom-color: #0a1722 !important;
+}
+
+.crisisops-map-popup.maplibregl-popup-anchor-top-right
+  .maplibregl-popup-tip {
+  border-bottom-color: #0a1722 !important;
+}
+
+
+.crisisops-map-popup.maplibregl-popup-anchor-bottom
+  .maplibregl-popup-tip {
+  border-top-color: #0a1722 !important;
+}
+
+.crisisops-map-popup.maplibregl-popup-anchor-bottom-left
+  .maplibregl-popup-tip {
+  border-top-color: #0a1722 !important;
+}
+
+.crisisops-map-popup.maplibregl-popup-anchor-bottom-right
+  .maplibregl-popup-tip {
+  border-top-color: #0a1722 !important;
+}
+
+
+.crisisops-map-popup.maplibregl-popup-anchor-left
+  .maplibregl-popup-tip {
+  border-right-color: #0a1722 !important;
+}
+
+
+.crisisops-map-popup.maplibregl-popup-anchor-right
+  .maplibregl-popup-tip {
+  border-left-color: #0a1722 !important;
+}
+
+
+/* Keep popup readable on phones */
+
+@media (max-width: 767px) {
+  .crisisops-map-popup {
+    max-width: 270px !important;
+  }
+
+  .crisisops-map-popup .maplibregl-popup-content {
+    padding: 12px 13px;
+    border-radius: 12px;
+  }
+}
